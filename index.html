@@ -14,6 +14,7 @@
             align-items: center;
             height: 100%;
             background-color: black;
+            flex-direction: column;
         }
 
         canvas {
@@ -22,34 +23,67 @@
         }
 
         #gameTitle {
-            position: absolute;
-            top: 10px;
             font-size: 24px;
             color: white;
             text-align: center;
-            width: 100%;
             font-family: Arial, sans-serif;
-            z-index: 10;
+            margin-top: 10px;
         }
 
         #scoreBoard {
-            position: absolute;
-            top: 50px;
             font-size: 18px;
             color: white;
             text-align: center;
-            width: 100%;
             font-family: Arial, sans-serif;
-            z-index: 10;
+            margin-bottom: 20px;
+        }
+
+        .control-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-button {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            color: white;
+            background-color: #333;
+            border: 2px solid white;
+            margin: 5px;
+            text-align: center;
+        }
+
+        .control-button:active {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
-    <div id="gameTitle">Hi i am Dev Nagar</div>
+    <div id="gameTitle">Hi, I am Dev Nagar</div>
     <div id="scoreBoard">
         Player 1: <span id="score1">0</span> | Player 2: <span id="score2">0</span>
     </div>
     <canvas id="pongCanvas"></canvas>
+
+    <div class="control-container">
+        <div class="controls">
+            <button class="control-button" id="leftUp">▲</button>
+            <button class="control-button" id="leftDown">▼</button>
+        </div>
+        <div class="controls">
+            <button class="control-button" id="rightUp">▲</button>
+            <button class="control-button" id="rightDown">▼</button>
+        </div>
+    </div>
 
     <script>
         // Canvas setup
@@ -59,7 +93,7 @@
         // Resize canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            canvas.height = window.innerHeight * 0.7; // Adjusted to fit the buttons below
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas(); // Initial call
@@ -78,12 +112,49 @@
         // Score
         let score1 = 0, score2 = 0;
 
-        // Keys pressed
-        const keys = {};
+        // Flags to track if the buttons are pressed
+        let leftPaddleUp = false;
+        let leftPaddleDown = false;
+        let rightPaddleUp = false;
+        let rightPaddleDown = false;
 
-        // Event listeners for key presses
-        document.addEventListener('keydown', (event) => keys[event.key] = true);
-        document.addEventListener('keyup', (event) => keys[event.key] = false);
+        // Button event listeners for left paddle
+        document.getElementById('leftUp').addEventListener('mousedown', () => leftPaddleUp = true);
+        document.getElementById('leftUp').addEventListener('mouseup', () => leftPaddleUp = false);
+        document.getElementById('leftUp').addEventListener('touchstart', () => leftPaddleUp = true);
+        document.getElementById('leftUp').addEventListener('touchend', () => leftPaddleUp = false);
+
+        document.getElementById('leftDown').addEventListener('mousedown', () => leftPaddleDown = true);
+        document.getElementById('leftDown').addEventListener('mouseup', () => leftPaddleDown = false);
+        document.getElementById('leftDown').addEventListener('touchstart', () => leftPaddleDown = true);
+        document.getElementById('leftDown').addEventListener('touchend', () => leftPaddleDown = false);
+
+        // Button event listeners for right paddle
+        document.getElementById('rightUp').addEventListener('mousedown', () => rightPaddleUp = true);
+        document.getElementById('rightUp').addEventListener('mouseup', () => rightPaddleUp = false);
+        document.getElementById('rightUp').addEventListener('touchstart', () => rightPaddleUp = true);
+        document.getElementById('rightUp').addEventListener('touchend', () => rightPaddleUp = false);
+
+        document.getElementById('rightDown').addEventListener('mousedown', () => rightPaddleDown = true);
+        document.getElementById('rightDown').addEventListener('mouseup', () => rightPaddleDown = false);
+        document.getElementById('rightDown').addEventListener('touchstart', () => rightPaddleDown = true);
+        document.getElementById('rightDown').addEventListener('touchend', () => rightPaddleDown = false);
+
+        // Update paddle positions based on button presses
+        function updatePaddles() {
+            if (leftPaddleUp && leftPaddleY > 0) {
+                leftPaddleY -= paddleSpeed;
+            }
+            if (leftPaddleDown && leftPaddleY < canvas.height - paddleHeight) {
+                leftPaddleY += paddleSpeed;
+            }
+            if (rightPaddleUp && rightPaddleY > 0) {
+                rightPaddleY -= paddleSpeed;
+            }
+            if (rightPaddleDown && rightPaddleY < canvas.height - paddleHeight) {
+                rightPaddleY += paddleSpeed;
+            }
+        }
 
         // Draw a rectangle (for paddles)
         function drawRect(x, y, width, height, color) {
@@ -98,22 +169,6 @@
             context.arc(x, y, radius, 0, Math.PI * 2, false);
             context.closePath();
             context.fill();
-        }
-
-        // Update paddle positions based on key presses
-        function updatePaddles() {
-            if (keys['w'] && leftPaddleY > 0) {
-                leftPaddleY -= paddleSpeed;
-            }
-            if (keys['s'] && leftPaddleY < canvas.height - paddleHeight) {
-                leftPaddleY += paddleSpeed;
-            }
-            if (keys['ArrowUp'] && rightPaddleY > 0) {
-                rightPaddleY -= paddleSpeed;
-            }
-            if (keys['ArrowDown'] && rightPaddleY < canvas.height - paddleHeight) {
-                rightPaddleY += paddleSpeed;
-            }
         }
 
         // Update ball position and check for collisions
@@ -179,3 +234,4 @@
     </script>
 </body>
 </html>
+
